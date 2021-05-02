@@ -25,7 +25,7 @@ class Tetris {
         int iScreenDw;
 
         Tetris(int dy, int dx);
-        ~Tetris(){}
+        ~Tetris();
 
         static void init(int *setOfCBlockArrays[], int blk_type, int blk_degree);
         int* createArrayScreen();

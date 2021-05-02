@@ -12,7 +12,7 @@ class CTetris : public Tetris {
         Matrix *oCScreen;
 
         CTetris(int dy, int dx);
-        ~CTetris(){}
+        ~CTetris();
         static void init(int *setOfCBlockArrays[], int blk_type, int blk_degree);
         TetrisState accept(char key);
         int* createArrayScreen();

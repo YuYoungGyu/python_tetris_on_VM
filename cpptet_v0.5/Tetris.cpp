@@ -21,6 +21,30 @@ Tetris::Tetris(int dy, int dx){
     justStarted = true;
 }
 
+Tetris::~Tetris(){
+    cout << "delete setOfBlockObjects" << endl;
+    while(!setOfBlockObjects.empty()){
+        vector<Matrix*> tmp_layer = setOfBlockObjects.back();
+        setOfBlockObjects.pop_back();
+        while(!tmp_layer.empty()){
+            Matrix* tmp = tmp_layer.back();
+            tmp_layer.pop_back();
+            delete tmp;
+        }
+    }
+
+    cout << "delete arrayScreen" << endl;
+    delete arrayScreen;
+    cout << "delete iScreen" << endl;
+    delete iScreen;
+    cout << "delete oScreen" << endl;
+    delete oScreen;
+    cout << "delete currBlk" << endl;
+    delete currBlk;
+    cout << "delete tempBlk" << endl;
+    delete tempBlk;
+}
+
 void Tetris::init(int *setOfCBlockArrays[], int blk_type, int blk_degree){
     nBlockTypes = blk_type;
     nBlockDegrees = blk_degree;
@@ -64,19 +88,24 @@ int* Tetris::createArrayScreen(){
 }
 
 TetrisState Tetris::accept(char key){
+    /*새로운 동적할당을 하기 전 수시로 delete를 해주도록 하였음*/
     state = Running;
 
     if (key >= '0' and key <= '6'){
         if (justStarted == false)
             deleteFullLines();
-        Matrix *ismat = new Matrix(oScreen);
-        iScreen = ismat;
+
         idxBlockType = key - '0';
         idxBlockDegree = 0;
+
+        Matrix *ismat = new Matrix(oScreen);
+        iScreen = ismat;
+
         currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];
 
         top = 0;
         left = iScreenDw + iScreenDx/2 - currBlk->get_dx()/2;
+
         tempBlk = iScreen->clip(top, left, top+currBlk->get_dy(), left+currBlk->get_dx());
         tempBlk = tempBlk->add(currBlk);
 
@@ -113,7 +142,7 @@ TetrisState Tetris::accept(char key){
     }
     else
         cout << "Wrong key!!!\n";
-        
+    
     tempBlk = iScreen->clip(top, left, top+currBlk->get_dy(), left+currBlk->get_dx());
     tempBlk = tempBlk->add(currBlk);
 
@@ -171,6 +200,7 @@ void Tetris::deleteFullLines(){
             }
         }
     }
+
     iScreen = new Matrix(*array, iScreenDy, iScreenDx);
     iScreen->paste(tempBlk, top, left);
 }

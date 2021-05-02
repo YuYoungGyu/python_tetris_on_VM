@@ -93,7 +93,8 @@ void registerAlarm() {
 #define color_blue "\033[34m"
 #define color_yellow "\033[33m"
 #define color_red "\033[31m"
-#define color_magenta "\033[35m"
+#define color_purple "\033[35m"
+#define color_pink "\033[95m"
 #define b_color_black "\033[1m\033[30m"
 #define color_normal ' '
 
@@ -183,20 +184,20 @@ void drawScreen(CTetris *board)
     for (int x = dw - 1; x < dx - dw + 1; x++) {
       if (array[y][x] == 0)
 	cout << color_black << "□" << color_normal;
-      else if (array[y][x] == 1)
-	cout << color_black << "■" << color_normal;
       else if (array[y][x] == 2)
-	cout << color_green << "■" << color_normal;
-      else if (array[y][x] == 3)
-	cout << color_cyan << "■" << color_normal;
-      else if (array[y][x] == 4)
-	cout << color_blue << "■" << color_normal;
-      else if (array[y][x] == 5)
-	cout << color_yellow << "■" << color_normal;
-      else if (array[y][x] == 6)
 	cout << color_red << "■" << color_normal;
+      else if (array[y][x] == 3)
+	cout << color_green << "■" << color_normal;
+      else if (array[y][x] == 4)
+	cout << color_yellow << "■" << color_normal;
+      else if (array[y][x] == 5)
+	cout << color_blue << "■" << color_normal;
+      else if (array[y][x] == 6)
+	cout << color_purple << "■" << color_normal;
       else if (array[y][x] == 7)
-	cout << color_magenta << "■" << color_normal;
+	cout << color_cyan << "■" << color_normal;
+      else if (array[y][x] == 8)
+	cout << color_pink << "■" << color_normal;
       else // array[y][x] == 1 // wall
 	cout << b_color_black << "■" << color_normal;
     }
@@ -259,7 +260,7 @@ int main(int argc, char *argv[]) {
     key = getch();
     cout << key << endl;
   }
-#if 0
+#if 1
   delete board;
 #endif
 

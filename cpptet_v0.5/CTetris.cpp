@@ -29,6 +29,30 @@ CTetris::CTetris(int dy, int dx) : Tetris(dy, dx){
     justStarted = true;
 }
 
+CTetris::~CTetris(){
+    cout << "delete setOfColorBlockObjects" << endl;
+    while(!setOfColorBlockObjects.empty()){
+        vector<Matrix*> tmp_layer = setOfColorBlockObjects.back();
+        setOfColorBlockObjects.pop_back();
+        while(!tmp_layer.empty()){
+            Matrix* tmp = tmp_layer.back();
+            tmp_layer.pop_back();
+            delete tmp;
+        }
+    }
+
+    cout << "delete arrayCScreen" << endl;
+    delete arrayCScreen;
+    cout << "delete iCScreen" << endl;
+    delete iCScreen;
+    cout << "delete oCScreen" << endl;
+    delete oCScreen;
+    cout << "delete currColorBlk" << endl;
+    delete currColorBlk;
+    cout << "delete tempColorBlk" << endl;
+    delete tempColorBlk;
+}
+
 void CTetris::init(int *setOfCBlockArrays[], int blk_type, int blk_degree){
     nBlockTypes = blk_type;
     nBlockDegrees = blk_degree;
@@ -52,7 +76,7 @@ void CTetris::init(int *setOfCBlockArrays[], int blk_type, int blk_degree){
         vector<Matrix*> setOfOneColorBlock;
         for(int i =0; i < nBlockDegrees; i++){
             Matrix *mat = new Matrix(setOfBlockObjects[j][i]);
-            mat->mulc(j+1);
+            mat->mulc(j+2);
             setOfOneColorBlock.push_back(mat);
         }
         setOfColorBlockObjects.push_back(setOfOneColorBlock);
@@ -62,23 +86,29 @@ void CTetris::init(int *setOfCBlockArrays[], int blk_type, int blk_degree){
 
 TetrisState CTetris::accept(char key){
     state = Running;
-
     if (key >= '0' and key <= '6'){
         if (justStarted == false)
             deleteFullLines();
+        
         idxBlockType = key - '0';
         idxBlockDegree = 0;
+
         Matrix *ismat = new Matrix(oScreen);
         iScreen = ismat;
+
         currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];
+        
         Matrix *icsmat = new Matrix(oCScreen);
         iCScreen = icsmat;
+
         currColorBlk = setOfColorBlockObjects[idxBlockType][idxBlockDegree];
 
         top = 0;
         left = iScreenDw + iScreenDx/2 - currBlk->get_dx()/2;
+
         tempBlk = iScreen->clip(top, left, top+currBlk->get_dy(), left+currBlk->get_dx());
         tempBlk = tempBlk->add(currBlk);
+
         tempColorBlk = iCScreen->clip(top, left, top+currColorBlk->get_dy(), left+currColorBlk->get_dx());
         tempColorBlk = tempColorBlk->add(currColorBlk);
 
@@ -91,6 +121,7 @@ TetrisState CTetris::accept(char key){
         Matrix *osmat = new Matrix(iScreen);
         oScreen = osmat;
         oScreen->paste(tempBlk, top, left);
+        
         Matrix *ocsmat = new Matrix(iCScreen);
         oCScreen = ocsmat;
         oCScreen->paste(tempColorBlk, top, left);
@@ -122,8 +153,11 @@ TetrisState CTetris::accept(char key){
     else
         cout << "Wrong key!!!\n";
 
+    //delete tempBlk;
     tempBlk = iScreen->clip(top, left, top+currBlk->get_dy(), left+currBlk->get_dx());
     tempBlk = tempBlk->add(currBlk);    
+
+    //delete tempColorBlk;
     tempColorBlk = iCScreen->clip(top, left, top+currColorBlk->get_dy(), left+currColorBlk->get_dx());
     tempColorBlk = tempColorBlk->add(currColorBlk);
 
@@ -138,7 +172,9 @@ TetrisState CTetris::accept(char key){
         }
         else if (key == 'w'){ // undo: rotate the block counter-clockwise
             idxBlockDegree = (idxBlockDegree - 1) % nBlockDegrees;
+            //delete currBlk;
             currBlk = setOfBlockObjects[idxBlockType][idxBlockDegree];
+            //delete currColorBlk;
             currColorBlk = setOfColorBlockObjects[idxBlockType][idxBlockDegree];
         }
         else if (key == ' '){ // undo: move up
@@ -148,6 +184,7 @@ TetrisState CTetris::accept(char key){
 
         tempBlk = iScreen->clip(top, left, top+currBlk->get_dy(), left+currBlk->get_dx());
         tempBlk = tempBlk->add(currBlk);
+
         tempColorBlk = iCScreen->clip(top, left, top+currColorBlk->get_dy(), left+currColorBlk->get_dx());
         tempColorBlk = tempColorBlk->add(currColorBlk);
     }
@@ -155,6 +192,7 @@ TetrisState CTetris::accept(char key){
     Matrix *osmat = new Matrix(iScreen);
     oScreen = osmat;
     oScreen->paste(tempBlk, top, left);
+    
     Matrix *ocsmat = new Matrix(iCScreen);
     oCScreen = ocsmat;
     oCScreen->paste(tempColorBlk, top, left);
@@ -213,8 +251,10 @@ void CTetris::deleteFullLines(){
             }
         }
     }
+
     iScreen = new Matrix(*array, iScreenDy, iScreenDx);
     iScreen->paste(tempBlk, top, left);
+
     iCScreen = new Matrix(*colorArray, iScreenDy, iScreenDx);
     iCScreen->paste(tempColorBlk, top, left);
 }
